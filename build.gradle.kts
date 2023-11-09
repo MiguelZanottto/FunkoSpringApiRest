@@ -33,6 +33,8 @@ dependencies {
     // Validación
     implementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    // Websocket
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
 }
 
 tasks.withType<Test> {

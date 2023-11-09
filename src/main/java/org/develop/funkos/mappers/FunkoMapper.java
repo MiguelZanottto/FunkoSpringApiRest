@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.develop.funkos.models.Funko.IMAGE_DEFAULT;
+
 @Component
 public class FunkoMapper {
     public Funko toFunko(FunkoCreateDto dto, Categoria categoria) {
@@ -21,7 +23,7 @@ public class FunkoMapper {
                 dto.getNombre(),
                 dto.getPrecio(),
                 dto.getCantidad(),
-                dto.getImagen(),
+                dto.getImagen() != null ? dto.getImagen() : IMAGE_DEFAULT,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 true,

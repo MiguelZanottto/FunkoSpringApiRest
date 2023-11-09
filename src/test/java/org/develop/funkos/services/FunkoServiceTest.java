@@ -9,12 +9,20 @@ import org.develop.funkos.exceptions.FunkoNotFound;
 import org.develop.funkos.mappers.FunkoMapper;
 import org.develop.funkos.models.Funko;
 import org.develop.funkos.repositories.FunkosRepository;
+import org.develop.notifications.config.WebSocketConfig;
+import org.develop.notifications.config.WebSocketHandler;
+import org.develop.notifications.mappers.FunkoNotificationMapper;
+import org.develop.notifications.models.Notificacion;
+import org.develop.storage.StorageService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +35,28 @@ class FunkoServiceTest {
     private final Categoria categoria = new Categoria(1L, "OTROS", LocalDateTime.now(), LocalDateTime.now(), true);
     private final Funko funko1 = new Funko(1L, "TEST-1", 19.99, 100, "test1.jpg", LocalDateTime.now(), LocalDateTime.now(), true, categoria);
     private final Funko funko2 = new Funko(2L, "TEST-2", 14.99, 59, "test2.jpg", LocalDateTime.now(), LocalDateTime.now(), true, categoria);
+    WebSocketHandler webSocketHandlerMock = mock (WebSocketHandler.class);
     @Mock
     private FunkosRepository funkoRepository;
+    @Mock
+    private StorageService storageService;
     @Mock
     private CategoriasService categoriasService;
     @Mock
     private FunkoMapper funkoMapper;
+    @Mock
+    private WebSocketConfig webSocketConfig;
+    @Mock
+    private FunkoNotificationMapper funkoNotificationMapper;
     @InjectMocks
     private FunkosServiceImpl funkosService;
+
+
+    @BeforeEach
+    void setUp(){
+        funkosService.setWebSocketService(webSocketHandlerMock);
+    }
+
 
     @Test
     void findAll(){
@@ -121,7 +143,7 @@ class FunkoServiceTest {
     }
 
     @Test
-    void save(){
+    void save() throws IOException {
         // Arrange
         FunkoCreateDto funkoCreateDto = FunkoCreateDto.builder()
                 .nombre("FunkoGuardado")
@@ -135,6 +157,7 @@ class FunkoServiceTest {
         when(funkoRepository.save(funko)).thenReturn(funko);
         when(categoriasService.findByNombre(funkoCreateDto.getCategoria())).thenReturn(categoria);
         when(funkoMapper.toFunko(funkoCreateDto, categoria)).thenReturn(funko);
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         // Act
         Funko savedFunko = funkosService.save(funkoCreateDto);
@@ -171,7 +194,7 @@ class FunkoServiceTest {
     }
 
     @Test
-    void update(){
+    void update() throws IOException {
         // Arrange
         Long id = 1L;
         FunkoUpdateDto funkoUpdateDto = FunkoUpdateDto.builder()
@@ -186,6 +209,7 @@ class FunkoServiceTest {
         when(funkoRepository.save(funko1)).thenReturn(funko1);
         when(funkoMapper.toFunko(funkoUpdateDto, funko1, categoria)).thenReturn(funko1);
         when(categoriasService.findByNombre(funkoUpdateDto.getCategoria())).thenReturn(categoria);
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         // Act
         Funko funkoActualizado = funkosService.update(id, funkoUpdateDto);
@@ -221,6 +245,7 @@ class FunkoServiceTest {
         assertEquals("Funko con id " + id +" no encontrado", res.getMessage());
 
         verify(funkoRepository, times(1)).findById(id);
+        verify(funkoRepository, times(0)).save(any(Funko.class));
     }
 
     @Test
@@ -244,14 +269,16 @@ class FunkoServiceTest {
 
         verify(funkoRepository, times(1)).findById(id);
         verify(categoriasService, times(1)).findByNombre(funkoUpdateDto.getCategoria());
+        verify(funkoRepository, times(0)).save(any(Funko.class));
     }
 
     @Test
-    void deleteById(){
+    void deleteById() throws IOException {
         // Arrange
         Long id = 2L;
 
         when(funkoRepository.findById(id)).thenReturn(Optional.of(funko2));
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         // Act
         funkosService.deleteById(id);
@@ -272,5 +299,36 @@ class FunkoServiceTest {
 
         verify(funkoRepository, times(1)).findById(id);
         verify(funkoRepository, times(0)).deleteById(id);
+    }
+
+    @Test
+    void onChange() throws IOException {
+        // Arrange
+        doNothing().when(webSocketHandlerMock).sendMessage(any(String.class));
+
+        // Act
+        funkosService.onChange(Notificacion.Tipo.CREATE, any(Funko.class));
+    }
+
+    @Test
+    void updateImage() throws IOException {
+        // Arrange
+        String imageUrl = "test1.jpg";
+
+        MultipartFile multipartFile = mock(MultipartFile.class);
+
+        when(funkoRepository.findById(funko1.getId())).thenReturn(Optional.of(funko1));
+        when(storageService.store(multipartFile)).thenReturn(imageUrl);
+        when(funkoRepository.save(any(Funko.class))).thenReturn(funko1);
+        doNothing().when(webSocketHandlerMock).sendMessage(anyString());
+
+        // Act
+        Funko updatedFunko = funkosService.updateImage(funko1.getId(), multipartFile);
+
+        // Assert
+        assertEquals(updatedFunko.getImagen(), imageUrl);
+        verify(funkoRepository, times(1)).save(any(Funko.class));
+        verify(storageService, times(1)).delete(funko1.getImagen());
+        verify(storageService, times(1)).store(multipartFile);
     }
 }

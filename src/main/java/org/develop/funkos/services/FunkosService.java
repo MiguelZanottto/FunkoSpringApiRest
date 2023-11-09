@@ -2,6 +2,7 @@ package org.develop.funkos.services;
 import org.develop.funkos.dto.FunkoCreateDto;
 import org.develop.funkos.dto.FunkoUpdateDto;
 import org.develop.funkos.models.Funko;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -11,5 +12,6 @@ public interface FunkosService {
     Funko save(FunkoCreateDto funkoCreateDto);
     Funko update(Long id, FunkoUpdateDto funkoUpdateDto);
     void deleteById(Long id);
+    Funko updateImage(Long id, MultipartFile image);
 }
 

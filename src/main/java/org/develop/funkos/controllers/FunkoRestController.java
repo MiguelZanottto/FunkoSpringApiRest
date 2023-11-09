@@ -8,10 +8,13 @@ import org.develop.funkos.models.Funko;
 import org.develop.funkos.services.FunkosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +82,24 @@ public class FunkoRestController {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+
+    @PatchMapping(value = "/imagen/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Funko> nuevoProducto(
+            @PathVariable Long id,
+            @RequestPart("file") MultipartFile file) {
+
+        log.info("Actualizando imagen de producto por id: " + id);
+
+        // Buscamos la raqueta
+        if (!file.isEmpty()) {
+            // Actualizamos el producto
+            return ResponseEntity.ok(funkosService.updateImage(id, file));
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se ha enviado una imagen para el funko o esta está vacía");
+        }
     }
 
 }

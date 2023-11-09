@@ -2,7 +2,6 @@ package org.develop.funkos.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.develop.categorias.models.Categoria;
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "FUNKOS")
 public class Funko {
+    public static final String IMAGE_DEFAULT = "https://via.placeholder.com/150";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
@@ -24,7 +24,7 @@ public class Funko {
     private Double precio = 0.0;
     @Column(name = "cantidad", columnDefinition = "integer default 0")
     private Integer cantidad = 0;
-    @Column(columnDefinition = "TEXT default  'Funko.jpg'") // Por defecto una imagen
+    @Column(columnDefinition = "TEXT default '" + IMAGE_DEFAULT + "'") // Por defecto una imagen
     private String imagen;
     @Column(updatable = false, nullable = false,  columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaCreacion;

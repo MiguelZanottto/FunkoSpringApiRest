@@ -19,7 +19,9 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -543,6 +545,45 @@ class FunkoRestControllerTest {
 
         // Verify
         verify(funkoService, times(1)).deleteById(1L);
+    }
+
+
+
+
+
+    @Test
+    void updateFunkoImage() throws Exception {
+        var myLocalEndpoint = myEndpoint + "/imagen/1";
+
+        when(funkoService.updateImage(anyLong(), any(MultipartFile.class))).thenReturn(funko1);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "filename.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "contenido del archivo".getBytes()
+        );
+
+        MockHttpServletResponse response = mockMv.perform(
+                multipart(myLocalEndpoint)
+                        .file(file)
+                        .with(req -> {
+                            req.setMethod("PATCH");
+                            return req;
+                        })
+        ).andReturn().getResponse();
+
+
+        Funko res = mapper.readValue(response.getContentAsString(), Funko.class);
+
+        // Assert
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(funko1, res)
+        );
+
+        // Verify
+        verify(funkoService, times(1)).updateImage(anyLong(), any(MultipartFile.class));
     }
 
 }
