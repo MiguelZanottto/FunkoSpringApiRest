@@ -49,21 +49,6 @@ class FunkoRepositoryTest {
         );
     }
 
-
-    @Test
-    void findAllByCategory (){
-        // Act
-        String categoria = "OTROS";
-        List<Funko> funkoList = funkosRepository.findByCategoriaContainsIgnoreCase(categoria);
-
-        // Assert
-        assertAll(
-                () -> assertNotNull(funkoList),
-                () -> assertFalse(funkoList.isEmpty()),
-                () -> assertTrue(funkoList.size() >= 2)
-        );
-    }
-
     @Test
     void findById_ExistId(){
         // Act

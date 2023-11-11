@@ -1,5 +1,6 @@
 package org.develop.funkos.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.develop.categorias.models.Categoria;
@@ -8,6 +9,7 @@ import org.develop.funkos.dto.FunkoUpdateDto;
 import org.develop.funkos.exceptions.FunkoNotFound;
 import org.develop.funkos.models.Funko;
 import org.develop.funkos.services.FunkosService;
+import org.develop.utils.pageresponse.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +19,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,55 +66,189 @@ class FunkoRestControllerTest {
     @Test
     void getAllFunkos() throws Exception {
         List<Funko> listaFunkos = List.of(funko1, funko2);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
 
         // Arrange
-        when(funkoService.findAll(null)).thenReturn(listaFunkos);
+        when(funkoService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMv.perform(
                         get(myEndpoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        List<Funko> res = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Funko.class));
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
 
         // Assert
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(2, res.size()),
-                () -> assertEquals(funko1, res.get(0)),
-                () -> assertEquals(funko2, res.get(1))
+                () -> assertEquals(2, res.content().size())
         );
 
         // Verify
-        verify(funkoService, times(1)).findAll(null);
+        verify(funkoService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
-    void getAllFunkosByCategory() throws Exception {
+    void getAllFunkos_ByNombre() throws Exception {
+        List<Funko> listaFunkos = List.of(funko1);
+        String localEndPoint = myEndpoint + "?nombre=TEST-1";
+
+        Optional<String> nombre = Optional.of("TEST-1");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
+
         // Arrange
-        List <Funko> listaFunkos = List.of(funko1);
-        String localEndPoint = myEndpoint + "?categoria=OTROS";
+        when(funkoService.findAll(nombre, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
-        when(funkoService.findAll("OTROS")).thenReturn(listaFunkos);
-
-        // Consulto el endpoint
         MockHttpServletResponse response = mockMv.perform(
                         get(localEndPoint)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        List<Funko> res = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Funko.class));
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
 
         // Assert
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(1, res.size()),
-                () -> assertEquals(funko1, res.get(0))
+                () -> assertEquals(1, res.content().size())
         );
-        verify(funkoService, times(1)).findAll("OTROS");
+
+        // Verify
+        verify(funkoService, times(1)).findAll(nombre, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
+
+    @Test
+    void getAllFunkos_ByCategoria() throws Exception {
+        List<Funko> listaFunkos = List.of(funko1, funko2);
+        String localEndPoint = myEndpoint + "?categoria=OTROS";
+
+        Optional<String> categoria = Optional.of("OTROS");
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
+
+        // Arrange
+        when(funkoService.findAll(Optional.empty(), categoria, Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMv.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+
+        // Assert
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        // Verify
+        verify(funkoService, times(1)).findAll(Optional.empty(), categoria, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+    }
+
+
+    @Test
+    void getAllFunkos_ByPrecio() throws Exception {
+        List<Funko> listaFunkos = List.of(funko1, funko2);
+        String localEndPoint = myEndpoint + "?precioMax=20.00";
+
+        Optional<Double> precioMax = Optional.of(20.00);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
+
+        // Arrange
+        when(funkoService.findAll(Optional.empty(), Optional.empty(), precioMax, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMv.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+
+        // Assert
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        // Verify
+        verify(funkoService, times(1)).findAll(Optional.empty(), Optional.empty(), precioMax, Optional.empty(), Optional.empty(), pageable);
+    }
+
+
+
+    @Test
+    void getAllFunkos_ByCantidad() throws Exception {
+        List<Funko> listaFunkos = List.of(funko1, funko2);
+        String localEndPoint = myEndpoint + "?cantidadMin=100";
+
+        Optional<Integer> cantidadMin = Optional.of(100);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
+
+        // Arrange
+        when(funkoService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), cantidadMin, Optional.empty(), pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMv.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+
+        // Assert
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        // Verify
+        verify(funkoService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), cantidadMin, Optional.empty(), pageable);
+    }
+
+    @Test
+    void getAllFunkos_ByIsActivo() throws Exception {
+        List<Funko> listaFunkos = List.of(funko1, funko2);
+        String localEndPoint = myEndpoint + "?isActivo=true";
+
+        Optional<Boolean> isActivo = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(listaFunkos);
+
+        // Arrange
+        when(funkoService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), isActivo, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMv.perform(
+                        get(localEndPoint)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Funko> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+
+        // Assert
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        // Verify
+        verify(funkoService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), isActivo, pageable);
+    }
+
 
     @Test
     void getFunkoById() throws Exception {

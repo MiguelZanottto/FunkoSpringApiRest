@@ -35,6 +35,8 @@ dependencies {
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     // Websocket
     implementation("org.springframework.boot:spring-boot-starter-websocket")
+    // Para pasar a XML los responses, negocacion de contenido
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }
 
 tasks.withType<Test> {

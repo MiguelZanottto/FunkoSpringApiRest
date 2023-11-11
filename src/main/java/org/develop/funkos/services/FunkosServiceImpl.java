@@ -2,6 +2,7 @@ package org.develop.funkos.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.criteria.Join;
 import lombok.extern.slf4j.Slf4j;
 import org.develop.categorias.models.Categoria;
 import org.develop.categorias.services.CategoriasService;
@@ -18,11 +19,14 @@ import org.develop.notifications.mappers.FunkoNotificationMapper;
 import org.develop.notifications.models.Notificacion;
 import org.develop.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -49,15 +53,41 @@ public class FunkosServiceImpl implements FunkosService {
         this.funkoNotificationMapper = funkoNotificationMapper;
     }
 
-
     @Override
-    public List<Funko> findAll(String categoria) {
-       if(categoria == null || categoria.isEmpty()){
-           log.info("Buscado todos los funkos");
-           return funkosRepository.findAll();
-       }
-       log.info("Buscando todos los funkos por categoria: " + categoria);
-       return funkosRepository.findByCategoriaContainsIgnoreCase(categoria.toLowerCase());
+    public Page<Funko> findAll(Optional<String> nombre, Optional<String> categoria, Optional<Double> precioMax, Optional<Integer> cantidadMin, Optional<Boolean> isActivo, Pageable pageable) {
+        // Criteerio de búsqueda por nombre
+        Specification<Funko> specNombreFunko = (root, query, criteriaBuilder) ->
+                nombre.map(n -> criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")), "%" + n.toLowerCase() + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        // Criterio de busqueda por categoria
+        Specification<Funko> specCategoriaFunjo = (root, query, criteriaBuilder) ->
+            categoria.map(c ->{
+                Join<Funko, Categoria> categoriaJoin = root.join("categoria");
+                return criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("nombre")), "%" + c.toLowerCase() + "%");
+            }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        // Criterio de busqueda por precio
+        Specification<Funko> specPrecioMaxFunko = (root, query, criteriaBuilder) ->
+                precioMax.map(p -> criteriaBuilder.lessThanOrEqualTo(root.get("precio"), p))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        // Criterio de busqueda por Cantidad
+        Specification<Funko> specCantidadMinFunko = (root, query, criteriaBuilder) ->
+                cantidadMin.map(c -> criteriaBuilder.lessThanOrEqualTo(root.get("cantidad"),c))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        // Criterio de busqueda por isActivo
+        Specification<Funko> specIsActivo = (root, query, criteriaBuilder) ->
+                isActivo.map(a -> criteriaBuilder.equal(root.get("isActivo"), a))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Funko> critero = Specification.where(specNombreFunko)
+                .and(specCategoriaFunjo)
+                .and(specPrecioMaxFunko)
+                .and(specCantidadMinFunko)
+                .and(specIsActivo);
+        return funkosRepository.findAll(critero, pageable);
     }
 
     @Override

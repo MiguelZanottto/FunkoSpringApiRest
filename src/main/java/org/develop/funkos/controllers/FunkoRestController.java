@@ -6,7 +6,11 @@ import org.develop.funkos.dto.FunkoCreateDto;
 import org.develop.funkos.dto.FunkoUpdateDto;
 import org.develop.funkos.models.Funko;
 import org.develop.funkos.services.FunkosService;
+import org.develop.utils.pageresponse.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -32,9 +37,21 @@ public class FunkoRestController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Funko>> getAllFunkos(@RequestParam(required = false) String categoria){
-        log.info("Buscando todos los funkos con categoria: " + categoria);
-        return ResponseEntity.ok(funkosService.findAll(categoria));
+    public ResponseEntity<PageResponse<Funko>> getAllProducts(
+            @RequestParam(required = false) Optional<String> nombre,
+            @RequestParam(required = false) Optional<String> categoria,
+            @RequestParam(required = false) Optional<Double> precioMax,
+            @RequestParam(required = false) Optional<Integer> cantidadMin,
+            @RequestParam(required = false) Optional<Boolean> isActivo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        log.info("Buscando todos los productos con las siguientes opciones: " + nombre + " " + categoria + " " + precioMax + " " + cantidadMin + " " + isActivo);
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+             Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(PageResponse.of(funkosService.findAll(nombre, categoria, precioMax, cantidadMin, isActivo, pageable), sortBy, direction));
     }
 
     @GetMapping("/{id}")
@@ -86,15 +103,14 @@ public class FunkoRestController {
 
 
     @PatchMapping(value = "/imagen/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Funko> nuevoProducto(
+    public ResponseEntity<Funko> nuevoFunko(
             @PathVariable Long id,
             @RequestPart("file") MultipartFile file) {
 
         log.info("Actualizando imagen de producto por id: " + id);
 
-        // Buscamos la raqueta
         if (!file.isEmpty()) {
-            // Actualizamos el producto
+            // Actualizamos el funko
             return ResponseEntity.ok(funkosService.updateImage(id, file));
 
         } else {
