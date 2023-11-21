@@ -37,6 +37,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     // Para pasar a XML los responses, negocacion de contenido
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    // Spring Data JPA para MongoDB
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    // Thyemeleaf
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
 
 tasks.withType<Test> {

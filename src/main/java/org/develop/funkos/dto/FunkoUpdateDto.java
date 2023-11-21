@@ -19,11 +19,10 @@ public class FunkoUpdateDto {
     @Min(value = 0, message = "La cantidad no puede ser negativa")
     private Integer cantidad;
     private String imagen;
-    @Pattern(regexp = "(?i)^(SERIE|DISNEY|SUPERHEROES|PELICULA|OTROS)$", message = "La categoria solo puede ser: SERIE, DISNEY, SUPERHEROES, PELICULAS U OTROS")
+    @Pattern(regexp = "(?i)^(SERIE|DISNEY|SUPERHEROES|PELICULAS|OTROS)$", message = "La categoria solo puede ser: SERIE, DISNEY, SUPERHEROES, PELICULAS U OTROS")
     private String categoria;
     private Boolean isActivo;
-
-
+    
     @JsonCreator
     public FunkoUpdateDto(
             @JsonProperty("nombre") String nombre,

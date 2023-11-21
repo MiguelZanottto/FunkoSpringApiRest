@@ -37,7 +37,7 @@ public class FunkoRestController {
     }
 
     @GetMapping()
-    public ResponseEntity<PageResponse<Funko>> getAllProducts(
+    public ResponseEntity<PageResponse<Funko>> getAllFunks(
             @RequestParam(required = false) Optional<String> nombre,
             @RequestParam(required = false) Optional<String> categoria,
             @RequestParam(required = false) Optional<Double> precioMax,
@@ -103,7 +103,7 @@ public class FunkoRestController {
 
 
     @PatchMapping(value = "/imagen/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Funko> nuevoFunko(
+    public ResponseEntity<Funko> updateImage(
             @PathVariable Long id,
             @RequestPart("file") MultipartFile file) {
 

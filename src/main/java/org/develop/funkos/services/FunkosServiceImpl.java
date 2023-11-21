@@ -142,8 +142,7 @@ public class FunkosServiceImpl implements FunkosService {
             storageService.delete(funkoActual.getImagen());
         }
         String imageStored = storageService.store(image);
-        String imageUrl = storageService.getUrl(imageStored); //storageService.getUrl(imageStored); // Si quiero la url completa
-        // Clonamos el producto con la nueva imagen, porque inmutabilidad de los objetos
+        String imageUrl = storageService.getUrl(imageStored);
         var funkoActualizado = new Funko(
                 funkoActual.getId(),
                 funkoActual.getNombre(),
@@ -155,11 +154,8 @@ public class FunkosServiceImpl implements FunkosService {
                 funkoActual.getIsActivo(),
                 funkoActual.getCategoria()
         );
-        // Lo guardamos en el repositorio
         var funkoUpdated = funkosRepository.save(funkoActualizado);
-        // Enviamos la notificación a los clientes ws
         onChange(Notificacion.Tipo.UPDATE, funkoUpdated);
-        // Devolvemos el producto actualizado
         return funkoUpdated;
     }
 
@@ -182,8 +178,6 @@ public class FunkosServiceImpl implements FunkosService {
             String json = mapper.writeValueAsString((notificacion));
 
             log.info("Enviando mensaje a los clientes ws");
-            // Enviamos el mensaje a los clientes ws con un hilo, si hay muchos clientes, puede tardar
-            // no bloqueamos el hilo principal que atiende las peticiones http
             Thread senderThread = new Thread(() -> {
                 try {
                     webSocketService.sendMessage(json);

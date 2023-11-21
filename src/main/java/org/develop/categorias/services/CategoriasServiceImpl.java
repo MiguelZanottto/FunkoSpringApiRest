@@ -52,7 +52,8 @@ public class CategoriasServiceImpl implements CategoriasService{
     @Override
     @Cacheable
     public Categoria findById(Long id) {
-        log.info("Buscando categoria por su id: " + id);
+        log.info("Buscando categoria por su i" +
+                "d: " + id);
         return categoriasRepository.findById(id).orElseThrow(() -> new CategoriaNotFound(id));
     }
 

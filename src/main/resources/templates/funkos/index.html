@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funkos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 60px;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-dark .navbar-toggler-icon {
+            background-color: #fff;
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #17a2b8;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand" href="#">Funko Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/funkos">Funkos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/funkos/create">Nuevo Funko</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mt-5 mb-4">Catálogo de Funkos</h1>
+        <form action="/funkos/" class="mb-3" method="get">
+            <div class="input-group">
+                <input class="form-control" id="search" name="search" th:value="${search}" type="text" placeholder="Buscar Funkos...">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
+                </div>
+            </div>
+        </form>
+        <div th:if="${not #lists.isEmpty(funkosPage.content)}">
+            <div class="row">
+                <div th:each="funko : ${funkosPage.content}" class="col-lg-4 mb-4">
+                    <div class="card">
+                        <img th:src="${funko.imagen}" class="card-img-top" alt="Funko Image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${funko.nombre}"></h5>
+                            <p class="card-text">Precio: $<span th:text="${funko.precio}"></span></p>
+                            <p class="card-text">Cantidad: <span th:text="${funko.cantidad}"></span></p>
+                            <div class="text-center">
+                                <a th:href="@{funkos/details/{id}(id=${funko.id})}" class="btn btn-primary btn-sm">Detalles</a>
+                                <a th:href="@{funkos/update/{id}(id=${funko.id})}" class="btn btn-secondary btn-sm">Editar</a>
+                                <a th:href="@{funkos/update-image/{id}(id=${funko.id})}" class="btn btn-success btn-sm">Cambiar Imagen</a>
+                                <a th:href="@{funkos/delete/{id}(id=${funko.id})}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${funkosPage.first ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{${funkosPage.first ? '#' : '/funkos'}(page=0, size=${funkosPage.size}, sort=${funkosPage.pageable.sort})}">&laquo;</a>
+                    </li>
+                    <li class="page-item" th:classappend="${funkosPage.first ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{${funkosPage.first ? '#' : '/funkos'}(page=${funkosPage.number - 1}, size=${funkosPage.size}, sort=${funkosPage.pageable.sort})}">Anterior</a>
+                    </li>
+                    <li class="page-item" th:classappend="${funkosPage.last ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{${funkosPage.last ? '#' : '/funkos'}(page=${funkosPage.number + 1}, size=${funkosPage.size}, sort=${funkosPage.pageable.sort})}">Siguiente</a>
+                    </li>
+                    <li class="page-item" th:classappend="${funkosPage.last ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{${funkosPage.last ? '#' : '/funkos'}(page=${funkosPage.totalPages - 1}, size=${funkosPage.size}, sort=${funkosPage.pageable.sort})}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div th:if="${#lists.isEmpty(funkosPage.content)}" class="alert alert-warning" role="alert">
+            No se encontraron Funkos.
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
