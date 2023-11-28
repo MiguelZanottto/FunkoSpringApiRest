@@ -2,11 +2,11 @@ package org.develop.categorias.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.develop.categorias.dto.CategoriaDto;
-import org.develop.categorias.exceptions.CategoriaNotFound;
-import org.develop.categorias.exceptions.CategoriaNotSave;
-import org.develop.categorias.models.Categoria;
-import org.develop.categorias.services.CategoriasService;
+import org.develop.rest.categorias.dto.CategoriaDto;
+import org.develop.rest.categorias.exceptions.CategoriaNotFound;
+import org.develop.rest.categorias.exceptions.CategoriaNotSave;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.categorias.services.CategoriasService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +18,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
-@ExtendWith(MockitoExtension.class)
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
 class CategoriaRestControllerTest {
     private final String myEndpoint = "/v1/categorias";
     private final Categoria categoria = new Categoria(1L, "OTROS", LocalDateTime.now(), LocalDateTime.now(), true);

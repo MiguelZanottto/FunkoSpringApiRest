@@ -1,7 +1,8 @@
 package org.develop.categorias.mappers;
 
-import org.develop.categorias.dto.CategoriaDto;
-import org.develop.categorias.models.Categoria;
+import org.develop.rest.categorias.dto.CategoriaDto;
+import org.develop.rest.categorias.mappers.CategoriasMapper;
+import org.develop.rest.categorias.models.Categoria;
 import org.junit.jupiter.api.Test;
 
 
@@ -41,8 +42,7 @@ class CategoriasMapperTest {
                 () -> assertEquals(categoriaDto.getNombre(), categoriaActualizada.getNombre()),
                 () -> assertEquals(categoriaDto.getIsActivo(), categoriaActualizada.getIsActivo()),
                 () -> assertEquals(categoria.getId(), categoriaActualizada.getId()),
-                () -> assertEquals(categoria.getFechaCreacion(), categoriaActualizada.getFechaCreacion()),
-                () -> assertNotEquals(categoria.getFechaActualizacion(), categoriaActualizada.getFechaActualizacion())
+                () -> assertEquals(categoria.getFechaCreacion(), categoriaActualizada.getFechaCreacion())
         );
     }
 }

@@ -1,10 +1,11 @@
 package org.develop.categorias.services;
 
-import org.develop.categorias.dto.CategoriaDto;
-import org.develop.categorias.exceptions.CategoriaNotFound;
-import org.develop.categorias.mappers.CategoriasMapper;
-import org.develop.categorias.models.Categoria;
-import org.develop.categorias.repositories.CategoriasRepository;
+import org.develop.rest.categorias.dto.CategoriaDto;
+import org.develop.rest.categorias.exceptions.CategoriaNotFound;
+import org.develop.rest.categorias.mappers.CategoriasMapper;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.categorias.repositories.CategoriasRepository;
+import org.develop.rest.categorias.services.CategoriasServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

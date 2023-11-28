@@ -1,12 +1,15 @@
 package org.develop.funkos.repositories;
 
-import org.develop.categorias.models.Categoria;
-import org.develop.funkos.models.Funko;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.funkos.models.Funko;
+import org.develop.rest.funkos.repositories.FunkosRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@TestPropertySource(properties = "spring.sql.init.mode = never")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class FunkoRepositoryTest {
     private final Categoria categoria = new Categoria(null, "OTROS", LocalDateTime.now(), LocalDateTime.now(), true);
     private final Funko funko1 = new Funko(null, "TEST-1", 19.99, 100, "test1.jpg", LocalDateTime.now(), LocalDateTime.now(), true, categoria);

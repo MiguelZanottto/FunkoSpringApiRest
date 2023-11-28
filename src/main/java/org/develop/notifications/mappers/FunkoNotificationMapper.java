@@ -1,6 +1,6 @@
 package org.develop.notifications.mappers;
 
-import org.develop.funkos.models.Funko;
+import org.develop.rest.funkos.models.Funko;
 import org.develop.notifications.dto.FunkoNotificationDto;
 import org.springframework.stereotype.Component;
 

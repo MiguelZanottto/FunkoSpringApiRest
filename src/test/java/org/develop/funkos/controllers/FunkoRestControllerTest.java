@@ -3,13 +3,13 @@ package org.develop.funkos.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.develop.categorias.models.Categoria;
-import org.develop.funkos.dto.FunkoCreateDto;
-import org.develop.funkos.dto.FunkoUpdateDto;
-import org.develop.funkos.exceptions.FunkoNotFound;
-import org.develop.funkos.models.Funko;
-import org.develop.funkos.services.FunkosService;
-import org.develop.utils.pageresponse.PageResponse;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.funkos.dto.FunkoCreateDto;
+import org.develop.rest.funkos.dto.FunkoUpdateDto;
+import org.develop.rest.funkos.exceptions.FunkoNotFound;
+import org.develop.rest.funkos.models.Funko;
+import org.develop.rest.funkos.services.FunkosService;
+import org.develop.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
-@ExtendWith(MockitoExtension.class)
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
 class FunkoRestControllerTest {
     private final String myEndpoint = "/v1/funkos";
     private final ObjectMapper mapper = new ObjectMapper();

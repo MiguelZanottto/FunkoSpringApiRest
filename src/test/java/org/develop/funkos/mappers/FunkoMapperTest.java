@@ -1,10 +1,11 @@
 package org.develop.funkos.mappers;
 
-import org.develop.categorias.models.Categoria;
-import org.develop.funkos.dto.FunkoCreateDto;
-import org.develop.funkos.dto.FunkoResponseDto;
-import org.develop.funkos.dto.FunkoUpdateDto;
-import org.develop.funkos.models.Funko;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.funkos.dto.FunkoCreateDto;
+import org.develop.rest.funkos.dto.FunkoResponseDto;
+import org.develop.rest.funkos.dto.FunkoUpdateDto;
+import org.develop.rest.funkos.mappers.FunkoMapper;
+import org.develop.rest.funkos.models.Funko;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

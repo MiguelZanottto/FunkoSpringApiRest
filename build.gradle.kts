@@ -24,23 +24,29 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-cache:2.4.0")
+    //Nogociacion de Contenido
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    //Websockets
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    // Cache
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    // Validación
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    // Websocket
-    implementation("org.springframework.boot:spring-boot-starter-websocket")
-    // Para pasar a XML los responses, negocacion de contenido
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
-    // Spring Data JPA para MongoDB
+    //MongoDB
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    // Thyemeleaf
+    //Thymeleaf
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    //Security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    // Dependencia para test
+    testImplementation("org.springframework.security:spring-security-test")
+    // Para manejar los JWT tokens
+    // JWT (Json Web Token)
+    implementation("com.auth0:java-jwt:4.4.0")
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 }
 
 tasks.withType<Test> {

@@ -1,12 +1,13 @@
 package org.develop.funkos.controllers;
 
-import org.develop.categorias.models.Categoria;
-import org.develop.funkos.dto.FunkoCreateDto;
-import org.develop.funkos.dto.FunkoUpdateDto;
-import org.develop.funkos.exceptions.FunkoNotFound;
-import org.develop.funkos.models.Funko;
-import org.develop.funkos.services.FunkosService;
-import org.develop.utils.pageresponse.PageResponse;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.funkos.controllers.FunkoRestController;
+import org.develop.rest.funkos.dto.FunkoCreateDto;
+import org.develop.rest.funkos.dto.FunkoUpdateDto;
+import org.develop.rest.funkos.exceptions.FunkoNotFound;
+import org.develop.rest.funkos.models.Funko;
+import org.develop.rest.funkos.services.FunkosService;
+import org.develop.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;

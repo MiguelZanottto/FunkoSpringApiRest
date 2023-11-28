@@ -1,6 +1,7 @@
 package org.develop.categorias.repositories;
 
-import org.develop.categorias.models.Categoria;
+import org.develop.rest.categorias.models.Categoria;
+import org.develop.rest.categorias.repositories.CategoriasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
