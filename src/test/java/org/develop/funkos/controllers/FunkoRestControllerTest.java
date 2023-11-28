@@ -42,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
+@ExtendWith(MockitoExtension.class)
 @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
 class FunkoRestControllerTest {
     private final String myEndpoint = "/v1/funkos";

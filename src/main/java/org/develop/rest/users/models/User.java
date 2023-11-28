@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "USUARIOS")
-@EntityListeners(AuditingEntityListener.class) // Para que sea auditada y se autorellene
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
