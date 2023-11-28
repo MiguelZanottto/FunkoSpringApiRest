@@ -42,7 +42,7 @@ class SwaggerConfig {
                                 )
                                 .contact(
                                         new Contact()
-                                                .name("Miguel Angel Zanotto Rokas")
+                                                .name("Miguel Angel Zanotto Rojas")
                                                 .email("miguelangel.zanotto@alumno.iesluisvives.org")
                                                 .url("https://github.com/MiguelZanottto")
                                 )

@@ -59,7 +59,6 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    @Cacheable(key = "#id")
     public UserInfoResponse findById(Long id) {
         log.info("Buscando usuario por id: " + id);
         var user = usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
