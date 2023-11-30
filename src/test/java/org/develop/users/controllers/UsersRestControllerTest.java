@@ -1,6 +1,5 @@
 package org.develop.users.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -28,12 +27,10 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -151,7 +148,7 @@ class UsersRestControllerTest {
         String myLocalEndPoint = myEndPoint + "/100";
         Long id = 100L;
 
-        when(userService.findById(id)).thenThrow(new UserNotFound("No existe el usuario con id " + id + ""));
+        when(userService.findById(id)).thenThrow(new UserNotFound("No existe el usuario con id " + id));
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(myLocalEndPoint)
@@ -199,6 +196,30 @@ class UsersRestControllerTest {
         assertEquals(404, response.getStatus());
 
         verify(userService, times(1)).save(userRequest);
+    }
+    @Test
+    void createUser_false_BadRequest() throws Exception {
+        UserRequest falseUserRequest = UserRequest.builder()
+                    .nombre("")
+                    .apellidos("")
+                    .email("test@test.com")
+                    .password("test")
+                    .username("")
+                    .build();
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        post(myEndPoint).accept(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(falseUserRequest)))
+                .andReturn().getResponse();
+
+        assertAll(
+                () -> assertEquals(400, response.getStatus()),
+                () -> assertTrue(response.getContentAsString().contains("Nombre no puede estar")),
+                () -> assertTrue(response.getContentAsString().contains("Apellidos no puede estar")),
+                () -> assertTrue(response.getContentAsString().contains("Username no puede estar"))
+        );
     }
 
     @Test
