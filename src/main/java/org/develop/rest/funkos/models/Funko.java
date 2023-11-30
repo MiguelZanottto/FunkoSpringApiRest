@@ -3,6 +3,7 @@ package org.develop.rest.funkos.models;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.develop.rest.categorias.models.Categoria;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Entity
+@Builder
 @Table(name = "FUNKOS")
 public class Funko {
     public static final String IMAGE_DEFAULT = "https://via.placeholder.com/150";
@@ -25,9 +27,11 @@ public class Funko {
     private String nombre;
     @Column(name = "precio", columnDefinition = "double precision default 0.0")
     @Schema(description = "Precio del funko", example = "100.0")
+    @Builder.Default
     private Double precio = 0.0;
     @Column(name = "cantidad", columnDefinition = "integer default 0")
     @Schema(description = "Cantidad del funko", example = "20")
+    @Builder.Default
     private Integer cantidad = 0;
     @Column(columnDefinition = "TEXT default '" + IMAGE_DEFAULT + "'") // Por defecto una imagen
     @Schema(description = "Imagen del funko", example = "https://via.placeholder.com/150")
